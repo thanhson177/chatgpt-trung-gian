@@ -36,48 +36,32 @@
     button:hover {
       background-color: #0056b3;
     }
-    #apikey {
-      width: 100%;
-      font-size: 16px;
-      margin-bottom: 10px;
-      padding: 10px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
   </style>
 </head>
 <body>
   <h2>Trò chuyện với GPT</h2>
-  <input id="apikey" type="password" placeholder="Nhập OpenAI API Key của bạn (bảo mật, không lưu lại)">
   <textarea id="prompt" rows="5" placeholder="Nhập câu hỏi tại đây..."></textarea><br>
   <button onclick="sendToGPT()">Gửi</button>
   <pre id="response"></pre>
 
   <script>
     async function sendToGPT() {
-      const apikey = document.getElementById("apikey").value.trim();
-      if (!apikey) {
-        alert("Vui lòng nhập OpenAI API Key!");
+      const prompt = document.getElementById("prompt").value.trim();
+      if (!prompt) {
+        document.getElementById("response").innerText = "Vui lòng nhập câu hỏi!";
         return;
       }
-      const prompt = document.getElementById("prompt").value;
       document.getElementById("response").innerText = "Đang gửi...";
       try {
-        const res = await fetch("https://api.openai.com/v1/chat/completions", {
+        const res = await fetch("https://gpt-server-thanhson177.replit.dev/chat", {
+ // <--- THAY BẰNG LINK SERVER CỦA BẠN!
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + apikey
-          },
-          body: JSON.stringify({
-            model: "gpt-3.5-turbo",
-            messages: [{ role: "user", content: prompt }]
-          })
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt })
         });
-
         const data = await res.json();
         document.getElementById("response").innerText =
-          data.choices?.[0]?.message?.content || "Không có phản hồi từ GPT.";
+          data.reply || data.error || "Không có phản hồi từ GPT.";
       } catch (e) {
         document.getElementById("response").innerText = "Đã xảy ra lỗi.";
       }
