@@ -47,23 +47,26 @@
   <script>
     async function sendToGPT() {
       const prompt = document.getElementById("prompt").value.trim();
+      const responseEl = document.getElementById("response");
       if (!prompt) {
-        document.getElementById("response").innerText = "Vui lòng nhập câu hỏi!";
+        responseEl.innerText = "Vui lòng nhập câu hỏi!";
         return;
       }
-      document.getElementById("response").innerText = "Đang gửi...";
+      responseEl.innerText = "Đang gửi...";
       try {
         const res = await fetch("https://gpt-server-thanhson177.replit.dev/chat", {
- // <--- THAY BẰNG LINK SERVER CỦA BẠN!
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ prompt })
         });
         const data = await res.json();
-        document.getElementById("response").innerText =
-          data.reply || data.error || "Không có phản hồi từ GPT.";
+        if (res.ok) {
+          responseEl.innerText = data.reply || "Không có phản hồi từ GPT.";
+        } else {
+          responseEl.innerText = "Lỗi: " + (data.error || "Không rõ nguyên nhân.");
+        }
       } catch (e) {
-        document.getElementById("response").innerText = "Đã xảy ra lỗi.";
+        responseEl.innerText = "Lỗi gửi yêu cầu hoặc server không phản hồi.";
       }
     }
   </script>
